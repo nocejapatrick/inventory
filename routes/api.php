@@ -16,3 +16,17 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::group(['middleware'=>'auth:api'],function(){
+    Route::apiResources(
+        ['item'=>'ItemController',
+        'request'=>'RequestController',
+        'transaction'=>'RequestTransactionController'
+        ]
+    );
+    Route::get('users/{users}','UserController@show');
+    Route::post('transactionUser','RequestTransactionController@sendToUserRequest');
+    Route::post('transactionRemark','RequestTransactionController@sendRemark');
+    Route::get('pdf/{pdf}','RequestController@pdf');
+});
+

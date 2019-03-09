@@ -20,8 +20,14 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
-
+Vue.component('admin-component', require('./components/AdminComponent.vue').default);
+Vue.component('item-form', require('./components/ItemForm.vue').default);
+Vue.component('modal-component', require('./components/ModalComponent.vue').default);
+Vue.component('item-list', require('./components/ItemList.vue').default);
+Vue.component('request-form', require('./components/RequestForm.vue').default);
+Vue.component('transaction-component', require('./components/TransactionsComponent.vue').default);
+Vue.component('request-items', require('./components/RequestItemsComponent.vue').default);
+Vue.component('request-lists-container', require('./components/RequestListsContainer.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -31,3 +37,10 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 const app = new Vue({
     el: '#app'
 });
+
+String.prototype.isMatch = function(item){
+    return this.toLowerCase().includes(item.toLowerCase());
+}
+Number.prototype.isMatch = function(item){
+    return this.toString().toLowerCase().isMatch(item.toLowerCase());
+}

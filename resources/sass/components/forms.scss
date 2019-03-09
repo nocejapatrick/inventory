@@ -1,0 +1,37 @@
+/*
+    Sample comment
+
+*/
+#inventory-table{
+    position: relative;
+    height: 890px;
+    
+    .form-group{
+        position: absolute !important;
+        bottom: 0%;
+        margin-bottom: 0px !important;
+    }
+}
+
+.page-item.active{
+    background: blue;
+}
+.page-link{
+    cursor: pointer;   
+    user-select: none;
+}
+.user-select-none{
+    user-select:none;
+}
+.item-highlight, .request-item-hover{
+    cursor: pointer;
+    &:hover{
+        background: #e3e3e3;
+    }
+}
+
+.delete-item-icon{
+    cursor: pointer;
+    color: blue;
+}
+
