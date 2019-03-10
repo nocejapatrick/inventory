@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App;
 use Illuminate\Http\Response;
 use PDF;
+use App\RequestTransaction;
 
 class RequestController extends Controller
 {
@@ -91,10 +92,11 @@ class RequestController extends Controller
     }
 
     public function pdf(Request $request,$id){
-        $userRequest = UserRequest::where('request_transaction_id',$id)->with('item')->get();
-        $data = ['id'=>$userRequest[0]->request_transaction_id,'requests'=>$userRequest];
+        $userRequest = UserRequest::where('request_transaction_id',$id)->where('status','Approve')->with('item')->get();
+        $transcation = RequestTransaction::where('id',$id)->with('user')->first();
+        // return response()->json($transcation->user);
+        $data = ['username'=>$transcation->user->name,'id'=>$userRequest[0]->request_transaction_id,'requests'=>$userRequest];
         $pdf = PDF::loadView('pdf.invoice', $data);
         return $pdf->download('invoice.pdf');
-        // return $userRequest;
     }
 }

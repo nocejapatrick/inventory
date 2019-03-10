@@ -27,6 +27,6 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::get('users/{users}','UserController@show');
     Route::post('transactionUser','RequestTransactionController@sendToUserRequest');
     Route::post('transactionRemark','RequestTransactionController@sendRemark');
-    Route::get('pdf/{pdf}','RequestController@pdf');
+    
 });
 
