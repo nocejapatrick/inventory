@@ -1844,6 +1844,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   mounted: function mounted() {
     console.log('Component mounted.');
+    console.log(this.requestForm);
   },
   methods: {
     getRequest: function getRequest(request) {
@@ -1859,7 +1860,11 @@ __webpack_require__.r(__webpack_exports__);
           }
         });
         _this2.requestForm = response.data;
+        console.log(JSON.stringify(_this2.requestForm));
       });
+    },
+    eraseRequest: function eraseRequest() {
+      this.requestForm = [];
     }
   }
 });
@@ -2402,10 +2407,16 @@ __webpack_require__.r(__webpack_exports__);
   props: ['transaction', 'maintransaction'],
   data: function data() {
     return {
-      send: false
+      send: false,
+      transact: this.transaction
     };
   },
   mounted: function mounted() {},
+  watch: {
+    transaction: function transaction(newVal) {
+      this.transact = newVal;
+    }
+  },
   methods: {
     sendRequest: function sendRequest(transact, maintransaction) {
       transact.forEach(function (i) {
@@ -2427,13 +2438,8 @@ __webpack_require__.r(__webpack_exports__);
         axios.post('/api/transactionUser', i).then(function (response) {
           console.log(response);
         });
-      }); // console.log(JSON.stringify(transact))
-    },
-    requestAction: function requestAction(transact) {
-      console.log(JSON.stringify(transact)); // axios.post('/api/transactionUser',transact)
-      // .then(response=>{
-      //     console.log(response)
-      // })
+      });
+      this.$emit('erase'); // console.log(JSON.stringify(transact))
     }
   }
 });
@@ -37727,17 +37733,20 @@ var render = function() {
           "div",
           { staticClass: "col-md-4" },
           [
-            _c("request-items", {
-              attrs: {
-                transaction: this.requestForm,
-                maintransaction: this.maintract
-              },
-              on: {
-                disablecheck: function($event) {
-                  return this.getRequest(_vm.request)
-                }
-              }
-            })
+            _vm.requestForm.length > 0
+              ? _c("request-items", {
+                  attrs: {
+                    transaction: this.requestForm,
+                    maintransaction: this.maintract
+                  },
+                  on: {
+                    erase: _vm.eraseRequest,
+                    disablecheck: function($event) {
+                      return this.getRequest(_vm.request)
+                    }
+                  }
+                })
+              : _vm._e()
           ],
           1
         )
@@ -38646,129 +38655,127 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm.transaction != ""
-    ? _c("div", { staticClass: "card" }, [
-        _vm._m(0),
-        _vm._v(" "),
-        _c("table", { staticClass: "table" }, [
-          _vm._m(1),
-          _vm._v(" "),
-          _c(
-            "tbody",
-            _vm._l(_vm.transaction, function(transactio) {
-              return _c("tr", { key: transactio.id }, [
-                _c("th", { attrs: { scope: "row" } }, [
-                  _vm._v(_vm._s(transactio.item.item_id))
-                ]),
-                _vm._v(" "),
-                _c("td", [_vm._v(_vm._s(transactio.item.item_name))]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("20")]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    "\n                " +
-                      _vm._s(transactio.request_qty) +
-                      "\n            "
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: transactio.action,
-                        expression: "transactio.action"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: {
-                      type: "checkbox",
-                      disabled: transactio.status != "Pending" || _vm.send
-                    },
-                    domProps: {
-                      checked: Array.isArray(transactio.action)
-                        ? _vm._i(transactio.action, null) > -1
-                        : transactio.action
-                    },
-                    on: {
-                      change: function($event) {
-                        var $$a = transactio.action,
-                          $$el = $event.target,
-                          $$c = $$el.checked ? true : false
-                        if (Array.isArray($$a)) {
-                          var $$v = null,
-                            $$i = _vm._i($$a, $$v)
-                          if ($$el.checked) {
-                            $$i < 0 &&
-                              _vm.$set(transactio, "action", $$a.concat([$$v]))
-                          } else {
-                            $$i > -1 &&
-                              _vm.$set(
-                                transactio,
-                                "action",
-                                $$a.slice(0, $$i).concat($$a.slice($$i + 1))
-                              )
-                          }
-                        } else {
-                          _vm.$set(transactio, "action", $$c)
-                        }
-                      }
-                    }
-                  })
-                ])
-              ])
-            }),
-            0
-          )
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "card-footer" }, [
-          _c("div", { staticClass: "form-group" }, [
-            _c("textarea", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.maintransaction.transaction_remarks,
-                  expression: "maintransaction.transaction_remarks"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: { placeholder: "Remarks" },
-              domProps: { value: _vm.maintransaction.transaction_remarks },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
+  return _c("div", { staticClass: "card" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("table", { staticClass: "table" }, [
+      _vm._m(1),
+      _vm._v(" "),
+      _c(
+        "tbody",
+        _vm._l(_vm.transact, function(transactio) {
+          return _c("tr", { key: transactio.id }, [
+            _c("th", { attrs: { scope: "row" } }, [
+              _vm._v(_vm._s(transactio.item.item_id))
+            ]),
+            _vm._v(" "),
+            _c("td", [_vm._v(_vm._s(transactio.item.item_name))]),
+            _vm._v(" "),
+            _c("td", { staticClass: "text-center" }, [_vm._v("20")]),
+            _vm._v(" "),
+            _c("td", [
+              _vm._v(
+                "\n                " +
+                  _vm._s(transactio.request_qty) +
+                  "\n            "
+              )
+            ]),
+            _vm._v(" "),
+            _c("td", [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: transactio.action,
+                    expression: "transactio.action"
                   }
-                  _vm.$set(
-                    _vm.maintransaction,
-                    "transaction_remarks",
-                    $event.target.value
-                  )
+                ],
+                staticClass: "form-control",
+                attrs: {
+                  type: "checkbox",
+                  disabled: transactio.status != "Pending" || _vm.send
+                },
+                domProps: {
+                  checked: Array.isArray(transactio.action)
+                    ? _vm._i(transactio.action, null) > -1
+                    : transactio.action
+                },
+                on: {
+                  change: function($event) {
+                    var $$a = transactio.action,
+                      $$el = $event.target,
+                      $$c = $$el.checked ? true : false
+                    if (Array.isArray($$a)) {
+                      var $$v = null,
+                        $$i = _vm._i($$a, $$v)
+                      if ($$el.checked) {
+                        $$i < 0 &&
+                          _vm.$set(transactio, "action", $$a.concat([$$v]))
+                      } else {
+                        $$i > -1 &&
+                          _vm.$set(
+                            transactio,
+                            "action",
+                            $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                          )
+                      }
+                    } else {
+                      _vm.$set(transactio, "action", $$c)
+                    }
+                  }
                 }
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c(
-            "button",
+              })
+            ])
+          ])
+        }),
+        0
+      )
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "card-footer" }, [
+      _c("div", { staticClass: "form-group" }, [
+        _c("textarea", {
+          directives: [
             {
-              staticClass: "btn btn-primary",
-              on: {
-                click: function($event) {
-                  return _vm.sendRequest(_vm.transaction, _vm.maintransaction)
-                }
+              name: "model",
+              rawName: "v-model",
+              value: _vm.maintransaction.transaction_remarks,
+              expression: "maintransaction.transaction_remarks"
+            }
+          ],
+          staticClass: "form-control",
+          attrs: { placeholder: "Remarks" },
+          domProps: { value: _vm.maintransaction.transaction_remarks },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
               }
-            },
-            [_vm._v("Submit to User")]
-          )
-        ])
-      ])
-    : _vm._e()
+              _vm.$set(
+                _vm.maintransaction,
+                "transaction_remarks",
+                $event.target.value
+              )
+            }
+          }
+        })
+      ]),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-primary",
+          on: {
+            click: function($event) {
+              return _vm.sendRequest(_vm.transaction, _vm.maintransaction)
+            }
+          }
+        },
+        [_vm._v("Submit to User")]
+      )
+    ])
+  ])
 }
 var staticRenderFns = [
   function() {

@@ -50,7 +50,7 @@
                 </div>
             </div>
              <div class="col-md-4">
-                 <request-items :transaction="this.requestForm" :maintransaction="this.maintract" @disablecheck="this.getRequest(request)"></request-items>
+                 <request-items @erase="eraseRequest" v-if="requestForm.length > 0" :transaction="this.requestForm" :maintransaction="this.maintract" @disablecheck="this.getRequest(request)"></request-items>
              </div>
         </div>
     </div>
@@ -79,6 +79,7 @@
         },
         mounted() {
             console.log('Component mounted.')
+            console.log(this.requestForm)
         },
         methods:{
            getRequest(request){
@@ -93,7 +94,11 @@
                         }
                     })
                     this.requestForm = response.data;
+                    console.log(JSON.stringify(this.requestForm))
                 })
+           },
+           eraseRequest(){
+               this.requestForm = [];
            }
         }
     }
