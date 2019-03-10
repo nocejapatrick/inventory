@@ -69,7 +69,7 @@
     <br>
     <div class="flex">
         <div class="name left">
-            <span>Patrick Neil E. Noceja</span>
+            <span>{{$username}}</span>
         </div>
         <div class="name right">
             <span>Sr. Jun Santuyo</span>

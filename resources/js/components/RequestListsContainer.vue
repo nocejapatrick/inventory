@@ -67,11 +67,12 @@
                 return request.request_qty.toFixed(2);
             },
             downloadRequest(transaction){
+                window.location.href = '/pdf/' + transaction.id;
                 // console.log(JSON.parse(JSON.stringify(transaction)));
-                axios.post('/api/pdf',transaction)
-                .then(response=>{
-                    console.log(response);
-                })
+                // axios.get('/api/pdf/'+transaction.id)
+                // .then(response=>{
+                //     console.log(response);
+                // })
             }
        }
     }

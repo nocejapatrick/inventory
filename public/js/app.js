@@ -2521,10 +2521,11 @@ __webpack_require__.r(__webpack_exports__);
       return request.request_qty.toFixed(2);
     },
     downloadRequest: function downloadRequest(transaction) {
-      // console.log(JSON.parse(JSON.stringify(transaction)));
-      axios.post('/api/pdf', transaction).then(function (response) {
-        console.log(response);
-      });
+      window.location.href = '/pdf/' + transaction.id; // console.log(JSON.parse(JSON.stringify(transaction)));
+      // axios.get('/api/pdf/'+transaction.id)
+      // .then(response=>{
+      //     console.log(response);
+      // })
     }
   }
 });

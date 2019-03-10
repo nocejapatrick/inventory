@@ -16,3 +16,5 @@ Route::get('/', 'Auth\LoginController@showLoginForm');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('pdf/{pdf}','RequestController@pdf');
