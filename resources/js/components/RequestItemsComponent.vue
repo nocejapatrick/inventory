@@ -1,5 +1,5 @@
 <template>
-    <div v-if="transaction !=''" class="card">
+    <div class="card">
         <div class="card-header">
             <h3>Requested Items</h3>
         </div>
@@ -13,7 +13,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="transactio in transaction" :key="transactio.id">
+                <tr v-for="transactio in transact" :key="transactio.id">
                 <th scope="row">{{transactio.item.item_id}}</th>
                 <td>{{transactio.item.item_name}}</td>
                 <td class="text-center">20</td>
@@ -43,10 +43,16 @@
         props:['transaction','maintransaction'],
         data(){
             return{
-                send:false
+                send:false,
+                transact:this.transaction
             }
         },
         mounted(){
+        },
+        watch:{
+            transaction:function(newVal){
+                this.transact = newVal;
+            }
         },
         methods:{
             sendRequest(transact,maintransaction){
@@ -55,7 +61,6 @@
                     delete i.created_at;
                     delete i.update_at;
                 })
-
                 
                 if(maintransaction.transaction_remarks != null){
                     axios.post('/api/transactionRemark',{id:transact[0].request_transaction_id,remarks:maintransaction.transaction_remarks})
@@ -69,14 +74,8 @@
                         console.log(response)
                     })
                 })
+                this.$emit('erase');
                 // console.log(JSON.stringify(transact))
-            },
-            requestAction(transact){
-                console.log(JSON.stringify(transact))
-                // axios.post('/api/transactionUser',transact)
-                // .then(response=>{
-                //     console.log(response)
-                // })
             }
         }
     }
