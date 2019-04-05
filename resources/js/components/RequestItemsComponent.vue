@@ -90,7 +90,7 @@
                         }
                     })
                 })
-               
+                this.$emit('erase');
                 // console.log(JSON.stringify(transact))
             }
         }
