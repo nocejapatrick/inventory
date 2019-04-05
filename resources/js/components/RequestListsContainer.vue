@@ -3,7 +3,7 @@
         <div class="col-md-4 mt-4" v-for="transaction in transactions" :key="transaction.id">
             <div class="card">
                 <div class="card-header">{{'Transaction '+transaction.id}}<br>
-                    <small>{{'Date Requested '+transaction.created_at}}</small>
+                    <small>{{'Date Requested '+ months[new Date(transaction.created_at).getMonth()] +  ' '+ new Date(transaction.created_at).getDate() +', '+new Date(transaction.created_at).getFullYear() +' | '+ getTime(transaction.created_at)+':'+ getMinutes(transaction.created_at) +' '+ getAmOrPm(transaction.created_at)}}</small>
                 </div>
                     <table class="table">
                         <thead>
@@ -31,7 +31,7 @@
                     <div class="form-group">
                         <textarea class="form-control" readonly v-model="transaction.transaction_remarks"></textarea>
                     </div>
-                    <button class="btn btn-primary">Re-Request</button>
+                    <!-- <button class="btn btn-primary">Re-Request</button> -->
                     <button class="btn btn-primary" @click="downloadRequest(transaction)">Download Request</button>
                 </div>
             </div>
@@ -43,7 +43,8 @@
     export default {
        data(){
            return{
-               transactions:[]
+               transactions:[],
+               months:[]
            }
        },
        mounted(){
@@ -51,6 +52,7 @@
            this.$root.$on('success',data=>{
                 this.fetchUsersTransactions()
            });
+           this.months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
        },
        methods:{
            fetchUsersTransactions(){
@@ -73,6 +75,21 @@
                 // .then(response=>{
                 //     console.log(response);
                 // })
+            },
+            getTime(created_at){
+                const arrayHrs = [12,1,2,3,4,5,6,7,8,9,10,11,12,1,2,3,4,5,6,7,8,9,10,11];
+                return arrayHrs[new Date(created_at).getHours()];
+            },
+            getAmOrPm(created_at){
+                var ampm = (new Date(created_at).getHours() < 12) ? "AM" : "PM";
+                return ampm;
+            },
+            getMinutes(created_at){
+                var minute = new Date(created_at).getMinutes();
+                if(minute < 10){
+                    minute = "0" + minute;
+                }
+                return minute;
             }
        }
     }

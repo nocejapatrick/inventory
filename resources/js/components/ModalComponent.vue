@@ -11,7 +11,7 @@
                 </div>
                 <div class="modal-body">
                     <div>
-                        <span class="font-weight-bold">Item Name:</span>
+                        <span class="font-weight-bold">Item Description:</span>
                         <span>{{item.item_name}}</span>
                     </div>
                     <div>

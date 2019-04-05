@@ -15,7 +15,7 @@ class ItemController extends Controller
     public function index()
     {
         //
-        $item = Item::paginate(15);
+        $item = Item::paginate(12);
         $response = [
             'pagination' => [
                 'total' => $item->total(),
@@ -61,6 +61,7 @@ class ItemController extends Controller
     public function show(Item $item)
     {
         //
+
     }
 
     /**
@@ -84,7 +85,7 @@ class ItemController extends Controller
     public function update(Request $request, Item $item)
     {
         //
-        $item->item_stock = $request->input('stock');
+        $item->fill($request->all());
         $item->save();
         return response()->json("Success");
     }

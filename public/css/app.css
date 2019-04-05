@@ -10665,12 +10665,6 @@ a.text-dark:focus {
   height: 890px;
 }
 
-#inventory-table .form-group {
-  position: absolute !important;
-  bottom: 0%;
-  margin-bottom: 0px !important;
-}
-
 .page-item.active {
   background: blue;
 }

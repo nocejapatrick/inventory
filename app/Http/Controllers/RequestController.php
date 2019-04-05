@@ -92,11 +92,12 @@ class RequestController extends Controller
     }
 
     public function pdf(Request $request,$id){
-        $userRequest = UserRequest::where('request_transaction_id',$id)->where('status','Approve')->with('item')->get();
+        $userRequest = UserRequest::where('request_transaction_id',$id)->with('item')->get();
         $transcation = RequestTransaction::where('id',$id)->with('user')->first();
-        // return response()->json($transcation->user);
-        $data = ['username'=>$transcation->user->name,'id'=>$userRequest[0]->request_transaction_id,'requests'=>$userRequest];
+        // return response()->json($userRequest);
+        $data = ['username'=>$transcation->user->name,'id'=>$userRequest[0]->request_transaction_id,'requests'=>$userRequest,'created_at'=>$transcation->created_at,'date_approved'=>$userRequest[0]->updated_at,'remarks'=>$transcation->transaction_remarks];
         $pdf = PDF::loadView('pdf.invoice', $data);
         return $pdf->download('invoice.pdf');
+    
     }
 }

@@ -32,15 +32,14 @@
                     <tbody v-else>
                         <tr v-for="item in item_list" :key="item.id" class="user-select-none" :class="{'bg-danger':(item.item_threshold/2) >= item.item_stock,'bg-warning':item.item_threshold >= item.item_stock}">
                             <th scope="row">{{item.item_id}}</th>
-                            <td>{{item.item_name}}</td>
+                            <td><input type="text" class="form-control" v-model="item.item_name" v-on:change="updateItem(item)"></td>
                             <td width="120" class="text-right">
-                                <!-- <input type="number" class="form-control" name="" id="" v-model="item.item_stock" v-on:change="updateStock(item.item_stock,item.id)"> -->
-                                {{computeStock(item)}}
+                                <input type="number" class="form-control" name="" id="" v-model="item.item_stock" v-on:change="updateItem(item)" step="any">
                             </td>
-                            <td>{{item.item_unit}}</td>
-                            <td class="text-center">{{item.item_classification}}</td>
-                            <td v-if="myuser == 'Admin'">{{computeThreshold(item)}}</td>
-                            <td>{{item.item_skill}}</td>
+                            <td><input type="text" class="form-control" v-model="item.item_unit" v-on:change="updateItem(item)"></td>
+                            <td class="text-center"><input type="text" class="form-control" v-model="item.item_classification" v-on:change="updateItem(item)"></td>
+                            <td v-if="myuser == 'Admin'"><input type="number" step="any" class="form-control" v-model="item.item_threshold" v-on:change="updateItem(item)"></td>
+                            <td><input type="text" class="form-control" v-model="item.item_skill" v-on:change="updateItem(item)"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -125,15 +124,16 @@
             lower(item){
                 return item.toLowerCase();
             },
-            updateStock(item_stock,id){  
-                axios.put('/api/item/'+id,
-                    {
-                        stock:item_stock
-                    }
-                )
-                .then(response =>{
-                    console.log(response)
-                })
+            updateItem(item){  
+                if(item.item_name != '' && item.item_stock != null && item.item_threshold != null && item.item_skill != null && item.item_classification != null){
+                    axios.put('/api/item/'+item.id,item
+                    )
+                    .then(response =>{
+                        console.log(response)
+                    })
+                }else{
+                    alert("Has to have a value");
+                }
             },
             setItem(item){
                 if(!this.requests.includes(item)){

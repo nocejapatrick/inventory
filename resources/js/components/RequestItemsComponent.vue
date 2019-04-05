@@ -8,7 +8,8 @@
                 <tr>
                 <th scope="col">ITEM ID</th>
                 <th scope="col">ITEM NAME</th>
-                <th scope="">CURRENT STOCK</th>
+                <th scope="col">CURRENT STOCK</th>
+                <th scope="col">UNIT</th>
                 <th scope="col">ITEM QTY</th>
                 </tr>
             </thead>
@@ -16,7 +17,8 @@
                 <tr v-for="transactio in transact" :key="transactio.id">
                 <th scope="row">{{transactio.item.item_id}}</th>
                 <td>{{transactio.item.item_name}}</td>
-                <td class="text-center">20</td>
+                <td class="text-right">{{transactio.item.item_stock}}</td>
+                <td>{{transactio.item.item_unit}}</td>
                 <td>
                     {{transactio.request_qty}}
                 </td>
@@ -33,6 +35,13 @@
             <div class="form-group">
                 <textarea class="form-control" placeholder="Remarks" v-model="maintransaction.transaction_remarks"></textarea>
             </div>
+            <div class="progress mb-3" v-show="sending">
+                <div class="progress-bar" role="progressbar" 
+                aria-valuemin="0" aria-valuemax="100" :style="{width:progress+'%'}">
+                    <span class="sr-only">70% Complete</span>
+                    SENDING REQUEST
+                </div>
+            </div> 
             <button class="btn btn-primary" @click="sendRequest(transaction,maintransaction)">Submit to User</button>
         </div>
     </div>  
@@ -44,7 +53,9 @@
         data(){
             return{
                 send:false,
-                transact:this.transaction
+                transact:this.transaction,
+                sending:true,
+                progress:0
             }
         },
         mounted(){
@@ -68,13 +79,18 @@
                         console.log("Successfully Sended Remarks")
                     })
                 }
+                this.sending = true;
                 transact.forEach(i=>{
                     axios.post('/api/transactionUser',i)
                     .then(response=>{
                         console.log(response)
+                        if(transact[transact.indexOf(i) + 1] == null){
+                            alert('SEND SUCCESS');
+                             this.$emit('erase');
+                        }
                     })
                 })
-                this.$emit('erase');
+               
                 // console.log(JSON.stringify(transact))
             }
         }

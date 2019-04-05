@@ -46,26 +46,60 @@
     .left{
         float:left;
     }
+    .text-success{
+        color:green;
+    }
+    .text-danger{
+        color:red;
+    }
+    .display-relative{
+        position:relative;
+        height:50px;
+    }
+    .display-absolute{
+        position:absolute;
+        
+    }
+    
     </style>
 </head>
 <body>
     <h1>ITEM REQUESTS</h1>
     <h3>Transaction ID: {{$id}}</h3>
+    <div class="display-relative">
+        <div class="display-absolute">
+            <h5>Transaction Created At: {{date('M-j-Y',strtotime($created_at)).' | '. date('g:i a',strtotime($created_at))}}</h5>
+        </div>
+        <div class="display-absolute" style="right:0%">
+             <h5>Date Approved: {{date('M-j-Y',strtotime($date_approved)).' | '. date('g:i a',strtotime($date_approved))}}</h5>
+        </div>
+    </div>
     <table style="width:100%">
     <tr>
         <th class="text-bold">Item ID</th>
-        <th class="text-bold">Item Name</th>
+        <th class="text-bold">Item Description</th>
         <th class="text-bold">Item Quantity</th>
+        <th class="text-bolf">Item Status</th>
     </tr>
     @foreach($requests as $request)
     <tr>
         <td>{{$request->item->item_id}}</td>
         <td>{{$request->item->item_name}}</td>
         <td>{{$request->request_qty .' '. $request->item->item_unit}}</td>
+        @if($request->status=='Approve')
+        <td class="text-success">{{$request->status}}</td>
+        @else
+        <td class="text-danger">{{$request->status}}</td>
+        @endif
     </tr>
     @endforeach
     </table>
-    <br>
+    @if($remarks != null)
+    <div class="remarks">
+        <h3 style="margin:5px 0px; color:black;">Remarks</h3>
+        <p style="margin:0px;">{{$remarks}}</p>
+    </div>
+    @endif
     <br>
     <div class="flex">
         <div class="name left">
@@ -77,3 +111,4 @@
     </div>
 </body>
 </html>
+

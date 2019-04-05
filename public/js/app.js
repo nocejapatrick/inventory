@@ -2033,7 +2033,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['action'],
   data: function data() {
@@ -2101,12 +2100,14 @@ __webpack_require__.r(__webpack_exports__);
     lower: function lower(item) {
       return item.toLowerCase();
     },
-    updateStock: function updateStock(item_stock, id) {
-      axios.put('/api/item/' + id, {
-        stock: item_stock
-      }).then(function (response) {
-        console.log(response);
-      });
+    updateItem: function updateItem(item) {
+      if (item.item_name != '' && item.item_stock != null && item.item_threshold != null && item.item_skill != null && item.item_classification != null) {
+        axios.put('/api/item/' + item.id, item).then(function (response) {
+          console.log(response);
+        });
+      } else {
+        alert("Has to have a value");
+      }
     },
     setItem: function setItem(item) {
       if (!this.requests.includes(item)) {
@@ -2403,12 +2404,23 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['transaction', 'maintransaction'],
   data: function data() {
     return {
       send: false,
-      transact: this.transaction
+      transact: this.transaction,
+      sending: true,
+      progress: 0
     };
   },
   mounted: function mounted() {},
@@ -2419,6 +2431,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     sendRequest: function sendRequest(transact, maintransaction) {
+      var _this = this;
+
       transact.forEach(function (i) {
         delete i.item;
         delete i.created_at;
@@ -2434,12 +2448,18 @@ __webpack_require__.r(__webpack_exports__);
         });
       }
 
+      this.sending = true;
       transact.forEach(function (i) {
         axios.post('/api/transactionUser', i).then(function (response) {
           console.log(response);
+
+          if (transact[transact.indexOf(i) + 1] == null) {
+            alert('SEND SUCCESS');
+
+            _this.$emit('erase');
+          }
         });
-      });
-      this.$emit('erase'); // console.log(JSON.stringify(transact))
+      }); // console.log(JSON.stringify(transact))
     }
   }
 });
@@ -2499,7 +2519,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      transactions: []
+      transactions: [],
+      months: []
     };
   },
   mounted: function mounted() {
@@ -2509,6 +2530,7 @@ __webpack_require__.r(__webpack_exports__);
     this.$root.$on('success', function (data) {
       _this.fetchUsersTransactions();
     });
+    this.months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   },
   methods: {
     fetchUsersTransactions: function fetchUsersTransactions() {
@@ -2532,6 +2554,23 @@ __webpack_require__.r(__webpack_exports__);
       // .then(response=>{
       //     console.log(response);
       // })
+    },
+    getTime: function getTime(created_at) {
+      var arrayHrs = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+      return arrayHrs[new Date(created_at).getHours()];
+    },
+    getAmOrPm: function getAmOrPm(created_at) {
+      var ampm = new Date(created_at).getHours() < 12 ? "AM" : "PM";
+      return ampm;
+    },
+    getMinutes: function getMinutes(created_at) {
+      var minute = new Date(created_at).getMinutes();
+
+      if (minute < 10) {
+        minute = "0" + minute;
+      }
+
+      return minute;
     }
   }
 });
@@ -2573,13 +2612,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       search: '',
       requests: [],
-      requestForm: []
+      requestForm: [],
+      months: []
     };
   },
   computed: {
@@ -2593,6 +2632,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   mounted: function mounted() {
     this.getRequests();
+    this.months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   },
   methods: {
     getRequests: function getRequests() {
@@ -2608,6 +2648,23 @@ __webpack_require__.r(__webpack_exports__);
       // then(response=>{
       //     this.requestForm = response.data;
       // })
+    },
+    getTime: function getTime(created_at) {
+      var arrayHrs = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+      return arrayHrs[new Date(created_at).getHours()];
+    },
+    getAmOrPm: function getAmOrPm(created_at) {
+      var ampm = new Date(created_at).getHours() < 12 ? "AM" : "PM";
+      return ampm;
+    },
+    getMinutes: function getMinutes(created_at) {
+      var minute = new Date(created_at).getMinutes();
+
+      if (minute < 10) {
+        minute = "0" + minute;
+      }
+
+      return minute;
     }
   }
 });
@@ -38154,7 +38211,32 @@ var render = function() {
                           _vm._v(_vm._s(item.item_id))
                         ]),
                         _vm._v(" "),
-                        _c("td", [_vm._v(_vm._s(item.item_name))]),
+                        _c("td", [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: item.item_name,
+                                expression: "item.item_name"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "text" },
+                            domProps: { value: item.item_name },
+                            on: {
+                              change: function($event) {
+                                return _vm.updateItem(item)
+                              },
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(item, "item_name", $event.target.value)
+                              }
+                            }
+                          })
+                        ]),
                         _vm._v(" "),
                         _c(
                           "td",
@@ -38163,27 +38245,163 @@ var render = function() {
                             attrs: { width: "120" }
                           },
                           [
-                            _vm._v(
-                              "\n                            " +
-                                _vm._s(_vm.computeStock(item)) +
-                                "\n                        "
-                            )
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: item.item_stock,
+                                  expression: "item.item_stock"
+                                }
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                type: "number",
+                                name: "",
+                                id: "",
+                                step: "any"
+                              },
+                              domProps: { value: item.item_stock },
+                              on: {
+                                change: function($event) {
+                                  return _vm.updateItem(item)
+                                },
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    item,
+                                    "item_stock",
+                                    $event.target.value
+                                  )
+                                }
+                              }
+                            })
                           ]
                         ),
                         _vm._v(" "),
-                        _c("td", [_vm._v(_vm._s(item.item_unit))]),
+                        _c("td", [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: item.item_unit,
+                                expression: "item.item_unit"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "text" },
+                            domProps: { value: item.item_unit },
+                            on: {
+                              change: function($event) {
+                                return _vm.updateItem(item)
+                              },
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(item, "item_unit", $event.target.value)
+                              }
+                            }
+                          })
+                        ]),
                         _vm._v(" "),
                         _c("td", { staticClass: "text-center" }, [
-                          _vm._v(_vm._s(item.item_classification))
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: item.item_classification,
+                                expression: "item.item_classification"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "text" },
+                            domProps: { value: item.item_classification },
+                            on: {
+                              change: function($event) {
+                                return _vm.updateItem(item)
+                              },
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  item,
+                                  "item_classification",
+                                  $event.target.value
+                                )
+                              }
+                            }
+                          })
                         ]),
                         _vm._v(" "),
                         _vm.myuser == "Admin"
                           ? _c("td", [
-                              _vm._v(_vm._s(_vm.computeThreshold(item)))
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: item.item_threshold,
+                                    expression: "item.item_threshold"
+                                  }
+                                ],
+                                staticClass: "form-control",
+                                attrs: { type: "number", step: "any" },
+                                domProps: { value: item.item_threshold },
+                                on: {
+                                  change: function($event) {
+                                    return _vm.updateItem(item)
+                                  },
+                                  input: function($event) {
+                                    if ($event.target.composing) {
+                                      return
+                                    }
+                                    _vm.$set(
+                                      item,
+                                      "item_threshold",
+                                      $event.target.value
+                                    )
+                                  }
+                                }
+                              })
                             ])
                           : _vm._e(),
                         _vm._v(" "),
-                        _c("td", [_vm._v(_vm._s(item.item_skill))])
+                        _c("td", [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: item.item_skill,
+                                expression: "item.item_skill"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "text" },
+                            domProps: { value: item.item_skill },
+                            on: {
+                              change: function($event) {
+                                return _vm.updateItem(item)
+                              },
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  item,
+                                  "item_skill",
+                                  $event.target.value
+                                )
+                              }
+                            }
+                          })
+                        ])
                       ]
                     )
                   }),
@@ -38322,7 +38540,7 @@ var render = function() {
               _c("div", { staticClass: "modal-body" }, [
                 _c("div", [
                   _c("span", { staticClass: "font-weight-bold" }, [
-                    _vm._v("Item Name:")
+                    _vm._v("Item Description:")
                   ]),
                   _vm._v(" "),
                   _c("span", [_vm._v(_vm._s(_vm.item.item_name))])
@@ -38671,7 +38889,11 @@ var render = function() {
             _vm._v(" "),
             _c("td", [_vm._v(_vm._s(transactio.item.item_name))]),
             _vm._v(" "),
-            _c("td", { staticClass: "text-center" }, [_vm._v("20")]),
+            _c("td", { staticClass: "text-right" }, [
+              _vm._v(_vm._s(transactio.item.item_stock))
+            ]),
+            _vm._v(" "),
+            _c("td", [_vm._v(_vm._s(transactio.item.item_unit))]),
             _vm._v(" "),
             _c("td", [
               _vm._v(
@@ -38763,6 +38985,39 @@ var render = function() {
       ]),
       _vm._v(" "),
       _c(
+        "div",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.sending,
+              expression: "sending"
+            }
+          ],
+          staticClass: "progress mb-3"
+        },
+        [
+          _c(
+            "div",
+            {
+              staticClass: "progress-bar",
+              style: { width: _vm.progress + "%" },
+              attrs: {
+                role: "progressbar",
+                "aria-valuemin": "0",
+                "aria-valuemax": "100"
+              }
+            },
+            [
+              _c("span", { staticClass: "sr-only" }, [_vm._v("70% Complete")]),
+              _vm._v("\n                SENDING REQUEST\n            ")
+            ]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
         "button",
         {
           staticClass: "btn btn-primary",
@@ -38796,7 +39051,9 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [_vm._v("ITEM NAME")]),
         _vm._v(" "),
-        _c("th", { attrs: { scope: "" } }, [_vm._v("CURRENT STOCK")]),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("CURRENT STOCK")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("UNIT")]),
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [_vm._v("ITEM QTY")])
       ])
@@ -38835,7 +39092,22 @@ var render = function() {
             _c("br"),
             _vm._v(" "),
             _c("small", [
-              _vm._v(_vm._s("Date Requested " + transaction.created_at))
+              _vm._v(
+                _vm._s(
+                  "Date Requested " +
+                    _vm.months[new Date(transaction.created_at).getMonth()] +
+                    " " +
+                    new Date(transaction.created_at).getDate() +
+                    ", " +
+                    new Date(transaction.created_at).getFullYear() +
+                    " | " +
+                    _vm.getTime(transaction.created_at) +
+                    ":" +
+                    _vm.getMinutes(transaction.created_at) +
+                    " " +
+                    _vm.getAmOrPm(transaction.created_at)
+                )
+              )
             ])
           ]),
           _vm._v(" "),
@@ -38903,10 +39175,6 @@ var render = function() {
                   }
                 }
               })
-            ]),
-            _vm._v(" "),
-            _c("button", { staticClass: "btn btn-primary" }, [
-              _vm._v("Re-Request")
             ]),
             _vm._v(" "),
             _c(
@@ -39021,7 +39289,23 @@ var render = function() {
                 _vm._v(" "),
                 _c("td", [_vm._v(_vm._s(request.user.name))]),
                 _vm._v(" "),
-                _c("td", [_vm._v(_vm._s(request.created_at))]),
+                _c("td", [
+                  _vm._v(
+                    _vm._s(
+                      _vm.months[new Date(request.created_at).getMonth()] +
+                        " " +
+                        new Date(request.created_at).getDate() +
+                        ", " +
+                        new Date(request.created_at).getFullYear() +
+                        " | " +
+                        _vm.getTime(request.created_at) +
+                        ":" +
+                        _vm.getMinutes(request.created_at) +
+                        " " +
+                        _vm.getAmOrPm(request.created_at)
+                    )
+                  )
+                ]),
                 _vm._v(" "),
                 _c("td", { staticClass: "text-dark" }, [
                   _vm._v(_vm._s(request.status))
@@ -39046,9 +39330,7 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [_vm._v("User Name")]),
         _vm._v(" "),
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("Date Issued")]),
-        _vm._v(" "),
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("Request Status")])
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Date Issued")])
       ])
     ])
   }
